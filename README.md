@@ -13,9 +13,7 @@ Kingdom Conquest is a strategic simulation game where two kingdoms compete for s
   - **Fortify Castle** 🏰: Strengthen the castle using resources, making it harder for the opponent to cause damage.
 
 ## Winning the Game 🏆
-The game is won by either:
-- Reducing the opponent's castle strength to zero.
-- Reducing the opponent's soldier count to zero.
+The game is won by reducing the opponent's castle strength to zero. 🏰🔥
 
 ## Stochastic Elements 🎲
 The outcome of battles and some actions are stochastic, meaning they have an element of randomness. This adds an unpredictable aspect to the game, requiring players to adapt their strategies.

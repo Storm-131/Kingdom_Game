@@ -37,10 +37,10 @@ def play_turn(player, opponent, choice):
     elif choice == 4:
         success, damage = player.attack(opponent)
         if success:
-            print(f"\n{player.name} successfully attacked! {opponent.name} 
+            print(f"\n{player.name} successfully attacked! {opponent.name} \
                   lost {damage} castle strength and {damage} soldier(s).")
         else:
-            print(f"\n{player.name}'s attack was repelled! {player.name} 
+            print(f"\n{player.name}'s attack was repelled! {player.name} \
                   lost {damage} soldier(s).")
             
 def q_table_choice(kingdom1, kingdom2, q_table):
