@@ -4,10 +4,10 @@
 # ---------------------------------------------------------*/
 #!/usr/bin/env python3
 
-from src.model import train_q_learning, discretize_state, get_state_index, choose_action
-from src.simulate import simulated_game
 from src.Kingdom import Kingdom
+from src.simulate import simulated_game
 from utils.helpers import analyze_q_table
+from src.model import train_q_learning, discretize_state, get_state_index, choose_action, evaluate_agent
 
 import numpy as np
 
@@ -132,24 +132,31 @@ ascii_header = """
 
 if __name__ == "__main__":
     
-    ## Run nornal game
+    choice = 5
+    
+    # 1) Nornal game (against human or machine)
+    if choice == 1:  
+        game(opponent="machine")  # human / machine
+    
+    # 2) Simulated game
+    elif choice == 2: 
+        simulated_game()  
 
-    game(opponent="machine")      # human / machine
+    # 3) Train (Q-Table) from scratch
+    elif choice == 3:
+        trained_q_table = train_q_learning(total_episodes=100000)
+        result = analyze_q_table(trained_q_table)
+        print(result)
     
-    ## Run simulated game
-    # simulated_game()
-
-    # Train from scratch
-    # trained_q_table = train_q_learning(total_episodes=100000)
-    # result = analyze_q_table(trained_q_table)
-    # print(result)
-    
-    # Train an already existing Q-Table
-    # q_table_loaded = np.loadtxt("./out/q_table.csv", delimiter=",")
-    # q_table_loaded = np.load("./out/q_table.npy")
-    # trained_q_table = train_q_learning(q_table=q_table_loaded, total_episodes=10000, epsilon=0, alpha=0)
-    
-    
+    # 4) Train with existing Q-Table
+    elif choice == 4: 
+        q_table_loaded = np.load("./out/q_table.npy")
+        trained_q_table = train_q_learning(q_table=q_table_loaded, total_episodes=10000, epsilon=0, alpha=0)
+        
+    # 5) Evaluate Q-Table
+    elif choice == 5:
+        q_table_loaded = np.load("./out/q_table.npy")
+        evaluate_agent(q_table_loaded, total_episodes=1000)
 
 # -------------------------Notes-----------------------------------------------*\
 #
