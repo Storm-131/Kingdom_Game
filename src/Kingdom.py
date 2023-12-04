@@ -7,8 +7,9 @@
 import random
 
 class Kingdom:
-    def __init__(self, name):
+    def __init__(self, name, player="human"):
         self.name = name
+        self.player = player
         self.castle_strength = 100
         self.resources = 50
         self.soldiers = 50

@@ -189,7 +189,7 @@ def evaluation_game(q_table, max_turns=max_turns):
             break
 
         # Kingdom 2 takes its turn half randomly, learning reate = 0, exploration rate = 0.5
-        done, _, _ = take_turn(kingdom2, kingdom1, q_table, 0, 0.9, 0.5)
+        done, _, _ = take_turn(kingdom2, kingdom1, q_table, 0, 0.9, 0.1)
         turn_count += 1
     
     if draw: 
@@ -219,6 +219,7 @@ def evaluate_agent(q_table, total_episodes=1000):
         action_freqs_total.append(action_freq)
         # print(f"Episode: {episode}, Win: {win_rate}, Reward: {avg_reward}")
         
+    # print("Win-Rates: ", win_rates)
     plot_evaluation(action_freqs_total, win_rates, average_rewards)
 
 #---------------------------------------------------------*/

@@ -9,6 +9,7 @@ from src.simulate import simulated_game
 from utils.helpers import analyze_q_table
 from src.model import train_q_learning, discretize_state, get_state_index, choose_action, evaluate_agent
 import time
+import random
 
 import numpy as np
 
@@ -69,40 +70,56 @@ def show_options_and_stats(player, opponent):
     
 
 def game(limit=50, opponent="human"):
-    kingdom1 = Kingdom("Kingdom A")
-    kingdom2 = Kingdom("Kingdom B")
+    
+    kingdom1 = Kingdom("Kingdom Atlantis")
+    kingdom2 = Kingdom("Kingdom Babylon", player=opponent)
+    Kingdoms = tuple(random.sample([kingdom1, kingdom2], 2))
+    
     q_table = np.load("./out/q_table.npy")
     turn = 1
     print (ascii_header)
+    
+    print(f"\n{Kingdoms[0].name} ({Kingdoms[0].player}) vs {Kingdoms[1].name} ({Kingdoms[1].player})")
     
     while True:
         print("\n---------------------------------------------")
         print(f"Round {turn}")
 
         # Player 1's turn
-        show_options_and_stats(kingdom1, kingdom2)
-        choice = int(input("\nChoose your action: "))
-        play_turn(kingdom1, kingdom2, choice)
-
-        if kingdom2.castle_strength <= 0:
-            print(f"\n{kingdom1.name} wins!")
+        show_options_and_stats(Kingdoms[0], Kingdoms[1])
+        
+        if Kingdoms[0].player == "human":
+            choice = int(input("\nChoose your action: "))
+            play_turn(Kingdoms[0], Kingdoms[1], choice)
+            time.sleep(1.5)
+        else:
+            choice = q_table_choice(Kingdoms[0], Kingdoms[1], q_table)
+            time.sleep(2)
+            play_turn(Kingdoms[0], Kingdoms[1], choice)
+            time.sleep(2)
+            
+        if Kingdoms[1].castle_strength <= 0:
+            print(f"\n{Kingdoms[0].name} wins! 👑\n")
             break
         
         # Player 2's turn
-        show_options_and_stats(kingdom2, kingdom1)
-        if opponent == "human":
-            choice = int(input("Choose your action: "))
-            play_turn(kingdom2, kingdom1, choice)
+        show_options_and_stats(Kingdoms[1], Kingdoms[0])
+        
+        if Kingdoms[1].player == "human":
+            choice = int(input("\nChoose your action: "))
+            play_turn(Kingdoms[1], Kingdoms[0], choice)
+            time.sleep(1.5)
         else:
-            choice = q_table_choice(kingdom1, kingdom2, q_table)
+            choice = q_table_choice(Kingdoms[1], Kingdoms[0], q_table)
             time.sleep(2)
-            play_turn(kingdom2, kingdom1, choice)
+            play_turn(Kingdoms[1], Kingdoms[0], choice)
             time.sleep(2)
-                    
-        if kingdom1.castle_strength <= 0:
-            print(f"\n{kingdom2.name} wins!")
+            
+        if Kingdoms[0].castle_strength <= 0:
+            print(f"\n{Kingdoms[0].name} wins! 👑\n")
             break
         
+        # Check Turn Limit
         turn += 1
                 
         if turn >= limit:
@@ -136,7 +153,7 @@ ascii_header = """
 
 if __name__ == "__main__":
     
-    choice = 5
+    choice = 1
     
     # 1) Nornal game (against human or machine)
     if choice == 1:  
@@ -148,14 +165,14 @@ if __name__ == "__main__":
 
     # 3) Train (Q-Table) from scratch
     elif choice == 3:
-        trained_q_table = train_q_learning(total_episodes=100000)
+        trained_q_table = train_q_learning(total_episodes=10000)
         result = analyze_q_table(trained_q_table)
         print(result)
     
     # 4) Train with existing Q-Table
     elif choice == 4: 
         q_table_loaded = np.load("./out/q_table.npy")
-        trained_q_table = train_q_learning(q_table=q_table_loaded, total_episodes=1000, epsilon=0, alpha=0)
+        trained_q_table = train_q_learning(q_table=q_table_loaded, total_episodes=10000, epsilon=0, alpha=0)
         
     # 5) Evaluate Q-Table
     elif choice == 5:
