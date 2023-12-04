@@ -8,6 +8,7 @@ from src.Kingdom import Kingdom
 from src.simulate import simulated_game
 from utils.helpers import analyze_q_table
 from src.model import train_q_learning, discretize_state, get_state_index, choose_action, evaluate_agent
+import time
 
 import numpy as np
 
@@ -37,11 +38,11 @@ def play_turn(player, opponent, choice):
     elif choice == 4:
         success, damage = player.attack(opponent)
         if success:
-            print(f"\n{player.name} successfully attacked! {opponent.name} \
-                  lost {damage} castle strength and {damage} soldier(s).")
+            print(f"\n{player.name} successfully attacked! {opponent.name} " +
+                  f"lost {damage} castle strength and {damage} soldier(s).")
         else:
-            print(f"\n{player.name}'s attack was repelled! {player.name} \
-                  lost {damage} soldier(s).")
+            print(f"\n{player.name}'s attack was repelled! {player.name} " +
+                f"lost {damage} soldier(s).")
             
 def q_table_choice(kingdom1, kingdom2, q_table):
     state1 = discretize_state(kingdom1)
@@ -75,11 +76,12 @@ def game(limit=50, opponent="human"):
     print (ascii_header)
     
     while True:
-        print(f"\nRound {turn}")
+        print("\n---------------------------------------------")
+        print(f"Round {turn}")
 
         # Player 1's turn
         show_options_and_stats(kingdom1, kingdom2)
-        choice = int(input("Choose your action: "))
+        choice = int(input("\nChoose your action: "))
         play_turn(kingdom1, kingdom2, choice)
 
         if kingdom2.castle_strength <= 0:
@@ -90,11 +92,13 @@ def game(limit=50, opponent="human"):
         show_options_and_stats(kingdom2, kingdom1)
         if opponent == "human":
             choice = int(input("Choose your action: "))
+            play_turn(kingdom2, kingdom1, choice)
         else:
             choice = q_table_choice(kingdom1, kingdom2, q_table)
-            
-        play_turn(kingdom2, kingdom1, choice)
-        
+            time.sleep(2)
+            play_turn(kingdom2, kingdom1, choice)
+            time.sleep(2)
+                    
         if kingdom1.castle_strength <= 0:
             print(f"\n{kingdom2.name} wins!")
             break
@@ -151,7 +155,7 @@ if __name__ == "__main__":
     # 4) Train with existing Q-Table
     elif choice == 4: 
         q_table_loaded = np.load("./out/q_table.npy")
-        trained_q_table = train_q_learning(q_table=q_table_loaded, total_episodes=10000, epsilon=0, alpha=0)
+        trained_q_table = train_q_learning(q_table=q_table_loaded, total_episodes=1000, epsilon=0, alpha=0)
         
     # 5) Evaluate Q-Table
     elif choice == 5:

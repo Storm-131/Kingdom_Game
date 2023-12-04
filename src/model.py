@@ -8,7 +8,7 @@ import numpy as np
 from src.Kingdom import Kingdom
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from utils.plotting import plot_item_frequencies, plot_results
+from utils.plotting import plot_evaluation # plot_item_frequencies, plot_results
 import math
 
 #---------------------------------------------------------*/
@@ -144,7 +144,6 @@ def update_q_table(q_table, state_index, action, reward, next_state_index, alpha
     ## Returns:
     None: The function updates the Q-table in place and does not return anything.
     """
-    # Debugging line
     # print(f"Updating Q-table with state: {state_index}, action: {action}")
 
     # Q-learning update rule: Q(s, a) = Q(s, a) + α * [R(s, a) + γ * max(Q(s', a')) - Q(s, a)]
@@ -168,7 +167,6 @@ def evaluation_game(q_table, max_turns=max_turns):
     total_reward = 0
     action_frequencies = {}
     
-
     kingdom1 = Kingdom("Kingdom A")
     kingdom2 = Kingdom("Kingdom B")
     done = False
@@ -206,8 +204,6 @@ def evaluation_game(q_table, max_turns=max_turns):
         else:
             action_frequencies[action_names[action]] = 1
     
-    # print("Action Frequencies: ", action_frequencies)
-    
     return total_wins, total_reward, action_frequencies
 
 
@@ -216,16 +212,14 @@ def evaluate_agent(q_table, total_episodes=1000):
     average_rewards = []
     action_freqs_total = []
     
-    for episode in range(total_episodes):  
+    for episode in tqdm(range(total_episodes)):  
         win_rate, avg_reward, action_freq = evaluation_game(q_table)
         win_rates.append(win_rate)
         average_rewards.append(avg_reward)
         action_freqs_total.append(action_freq)
-        # print(f"Episode: {episode}, Win Rate: {win_rate}, Average Reward: {avg_reward}")
+        # print(f"Episode: {episode}, Win: {win_rate}, Reward: {avg_reward}")
         
-    plot_item_frequencies(action_freqs_total)
-    plot_results(win_rates, average_rewards)
-
+    plot_evaluation(action_freqs_total, win_rates, average_rewards)
 
 #---------------------------------------------------------*/
 # Functions (Main)
@@ -264,9 +258,10 @@ def take_turn(kingdom, opponent, q_table, alpha, gamma, epsilon):
     # Calculate the reward based on the action taken and the outcome
     reward = get_reward(prev_state1, prev_state2, curr_state1, curr_state2, action, attack_outcome, kingdom, opponent)
 
-    # # Print statement to show the action taken, the current state, and the reward
-    # action_names = ["Attack", "Gather Resources", "Train Soldiers", "Fortify Castle"]
-    # print(f"{kingdom.name} takes action: {action_names[action]} | State: {prev_state1}, Opponent State: {prev_state2} | Reward: {reward}")
+    # Print statement to show the action taken, the current state, and the reward
+    if PRINTER:
+        action_names = ["Attack", "Gather Resources", "Train Soldiers", "Fortify Castle"]
+        print(f"{kingdom.name} takes action: {action_names[action]} | State: {prev_state1}, Opponent State: {prev_state2} | Reward: {reward}")
 
     # Update the Q-table
     update_q_table(q_table, state_index, action, reward, next_state_index, alpha, gamma)
@@ -306,11 +301,6 @@ def run_episode(q_table, alpha=alpha, gamma=gamma, epsilon=epsilon_start, max_tu
         # Kingdom 2 takes its turn (More random action, no Q-Table Update)
         done, _, _ = take_turn(kingdom2, kingdom1, q_table, alpha=0, gamma=gamma, epsilon=0.6)
         turn_count += 1
-            
-        # print("Turn count: ", turn_count)
-        
-    # if turn_count >= max_turns:
-        # print("Game ended due to turn limit")
         
     return q_table
 
@@ -349,14 +339,15 @@ def train_q_learning(q_table=q_table, total_episodes=1000, epsilon=epsilon_start
             action_freqs_total.append(action_freq)
             # print(f"Episode: {episode}, Win Rate: {win_rate}, Average Reward: {avg_reward}")
 
+    plot_evaluation(action_freqs_total, win_rates, average_rewards)
+    
     print(win_rates) if PRINTER else None
     print(action_freqs_total) if PRINTER else None
     
     q_table_trained = q_table
     np.savetxt("./out/q_table.csv", q_table, delimiter=",")
     np.save("./out/q_table.npy", q_table)
-    plot_item_frequencies(action_freqs_total)
-    plot_results(win_rates, average_rewards)
+    
     return q_table_trained
             
 # -------------------------Notes-----------------------------------------------*\
