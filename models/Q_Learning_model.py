@@ -1,5 +1,5 @@
 #---------------------------------------------------------*\
-# Title: 
+# Title: Model (OOP)
 # Author: 
 #---------------------------------------------------------*/
 #!/usr/bin/env python3
@@ -7,10 +7,9 @@
 import numpy as np
 import math
 from src.Kingdom import Kingdom
-from utils.plotting import plot_evaluation # Ensure this utility is available
+from utils.plotting import plot_evaluation
 from tqdm import tqdm
 from src.eval import evaluation_game
-
 
 PRINTER = False # Print list of actions-frequencies and win-rates atfer training
 
